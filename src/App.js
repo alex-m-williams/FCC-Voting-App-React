@@ -7,6 +7,7 @@ import RaisedButton from "material-ui/RaisedButton";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Drawer from "material-ui/Drawer";
 import MenuItem from "material-ui/MenuItem";
+import Paper from "material-ui/Paper";
 
 const style = {
   margin: 12
@@ -16,7 +17,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
+      authed: false
     };
   }
 
@@ -63,14 +65,17 @@ class App extends Component {
               </Link>
             </MenuItem>
             <MenuItem>
-              <Link to="/topics" onClick={this.handleClose}>
-                Topics
+              <Link to="/polls" onClick={this.handleClose}>
+                Polls
               </Link>
             </MenuItem>
           </Drawer>
-          <Route exact="exact" path="/" component={Home} />
+          <Route exact path="/" component={Home} />
           <Route path="/about" component={About} />
-          <Route path="/topics" component={Topics} />
+          <Route
+            path="/polls"
+            render={props => <Polls authed={this.state.authed} {...props} />}
+          />
         </MuiThemeProvider>
       </Router>
     );
@@ -87,33 +92,52 @@ const About = () => (
     <h2>About</h2>
   </div>
 );
-const Topic = ({ match }) => (
+const Poll = ({ match }) => (
   <div>
-    <h3>{match.params.topicId}</h3>
+    <h3>{match.params.PollId}</h3>
   </div>
 );
-const Topics = ({ match }) => (
-  <div>
-    <h2>Topics</h2>
-    <ul>
-      <li>
-        <Link to={`${match.url}/rendering`}>Rendering with React</Link>
-      </li>
-      <li>
-        <Link to={`${match.url}/components`}>Components</Link>
-      </li>
-      <li>
-        <Link to={`${match.url}/props-v-state`}>Props v. State</Link>
-      </li>
-    </ul>
+class Polls extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      pollIdentifiers: ["rendering", "components", "props-v-state"]
+    };
+  }
+  render() {
+    let polls = this.state.pollIdentifiers.map(poll => {
+      return (
+        <li>
+          <Link to={`${this.props.match.url}/${poll}`}>{poll}</Link>
+        </li>
+      );
+    });
 
-    <Route path={`${match.url}/:topicId`} component={Topic} />
-    <Route
-      exact="exact"
-      path={match.url}
-      render={() => <h3>Please select a topic.</h3>}
-    />
-  </div>
-);
+    return (
+      <div>
+        <h2>
+          Polls Select a poll to view results
+          {this.props.authed == true ? (
+            "and log in to create a poll"
+          ) : (
+            <RaisedButton
+              label="Make a New Poll"
+              secondary={true}
+              style={style}
+            />
+          )}
+        </h2>
+        <ul>{polls}</ul>
+
+        <Route path={`${this.props.match.url}/:PollId`} component={Poll} />
+        <Route
+          exact="exact"
+          path={this.props.match.url}
+          render={() => <h3>Please select a topic. </h3>}
+        />
+      </div>
+    );
+  }
+}
 
 export default App;
