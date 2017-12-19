@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Drawer from "material-ui/Drawer";
 import MenuItem from "material-ui/MenuItem";
 import Paper from "material-ui/Paper";
+import Piechart from "./components/Piechart";
 
 const style = {
   margin: 12
@@ -92,11 +93,41 @@ const About = () => (
     <h2>About</h2>
   </div>
 );
-const Poll = ({ match }) => (
-  <div>
-    <h3>{match.params.PollId}</h3>
-  </div>
-);
+
+class Poll extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      voteOptions: ["a", "b", "c"],
+      votes: [3, 5, 45, 55]
+    };
+  }
+
+  componentWillMount() {}
+
+  render() {
+    return (
+      <div>
+        <h3>{this.props.match.params.PollId}</h3>
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <Piechart
+            x={100}
+            y={100}
+            outerRadius={100}
+            innerRadius={50}
+            data={[
+              { value: this.state.votes[0], label: "a" },
+              { value: this.state.votes[1], label: "b" },
+              { value: this.state.votes[2], label: "c" },
+              { value: this.state.votes[3], label: "d" }
+            ]}
+          />
+        </svg>
+      </div>
+    );
+  }
+}
+
 class Polls extends Component {
   constructor(props) {
     super(props);
@@ -114,7 +145,7 @@ class Polls extends Component {
     });
 
     return (
-      <div>
+      <Paper>
         <h2>
           Polls Select a poll to view results
           {this.props.authed == true ? (
@@ -135,7 +166,7 @@ class Polls extends Component {
           path={this.props.match.url}
           render={() => <h3>Please select a topic. </h3>}
         />
-      </div>
+      </Paper>
     );
   }
 }
