@@ -98,7 +98,7 @@ class Poll extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      voteOptions: ["a", "b", "c"],
+      voteOptions: ["a", "b", "c", "d"],
       votes: [3, 5, 45, 55]
     };
   }
@@ -106,8 +106,24 @@ class Poll extends Component {
   componentWillMount() {}
 
   render() {
+    let data = this.state.votes.map((vote, i) => {
+      return { value: vote, label: this.state.voteOptions[i] };
+    });
     return (
       <div>
+        <Route
+          render={({ history }) => (
+            <button
+              type="button"
+              onClick={() => {
+                history.push("/polls");
+                this.props.closePoll();
+              }}
+            >
+              Click Me!
+            </button>
+          )}
+        />
         <h3>{this.props.match.params.PollId}</h3>
         <svg xmlns="http://www.w3.org/2000/svg">
           <Piechart
@@ -115,12 +131,7 @@ class Poll extends Component {
             y={100}
             outerRadius={100}
             innerRadius={50}
-            data={[
-              { value: this.state.votes[0], label: "a" },
-              { value: this.state.votes[1], label: "b" },
-              { value: this.state.votes[2], label: "c" },
-              { value: this.state.votes[3], label: "d" }
-            ]}
+            data={data}
           />
         </svg>
       </div>
@@ -132,41 +143,66 @@ class Polls extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      pollOpen: false,
       pollIdentifiers: ["rendering", "components", "props-v-state"]
     };
   }
+
+  openPoll = () => {
+    this.setState({
+      pollOpen: true
+    });
+  };
+
+  closePoll = () => {
+    this.setState({
+      pollOpen: false
+    });
+  };
+
   render() {
     let polls = this.state.pollIdentifiers.map(poll => {
       return (
         <li>
-          <Link to={`${this.props.match.url}/${poll}`}>{poll}</Link>
+          <Link to={`${this.props.match.url}/${poll}`} onClick={this.openPoll}>
+            {poll}
+          </Link>
         </li>
       );
     });
 
     return (
-      <Paper>
-        <h2>
-          Polls Select a poll to view results
-          {this.props.authed == true ? (
-            "and log in to create a poll"
-          ) : (
-            <RaisedButton
-              label="Make a New Poll"
-              secondary={true}
-              style={style}
+      <React.Fragment>
+        {this.state.pollOpen === false ? (
+          <Paper>
+            <h2>
+              Polls Select a poll to view results
+              {this.props.authed == true ? (
+                "and log in to create a poll"
+              ) : (
+                <RaisedButton
+                  label="Make a New Poll"
+                  secondary={true}
+                  style={style}
+                />
+              )}
+            </h2>
+            <ul>{polls}</ul>
+          </Paper>
+        ) : (
+          <React.Fragment>
+            <Route
+              path={`${this.props.match.url}/:PollId`}
+              render={props => <Poll closePoll={this.closePoll} {...props} />}
             />
-          )}
-        </h2>
-        <ul>{polls}</ul>
-
-        <Route path={`${this.props.match.url}/:PollId`} component={Poll} />
-        <Route
-          exact="exact"
-          path={this.props.match.url}
-          render={() => <h3>Please select a topic. </h3>}
-        />
-      </Paper>
+            <Route
+              exact="exact"
+              path={this.props.match.url}
+              render={() => <h3>Please select a topic. </h3>}
+            />
+          </React.Fragment>
+        )}
+      </React.Fragment>
     );
   }
 }
