@@ -54,7 +54,7 @@ class App extends Component {
       <Router>
         <MuiThemeProvider>
           <AppBar
-            title="{this.state.response}"
+            title={this.state.response}
             onLeftIconButtonClick={this.handleToggle}
             iconElementRight={
               <RaisedButton
