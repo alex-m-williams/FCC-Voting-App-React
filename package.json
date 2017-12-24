@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "create-react-app": "^1.4.3",
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "passport": "^0.4.0",
+    "passport-twitter": "^1.0.4"
   },
   "devDependencies": {
     "concurrently": "^3.5.0"
