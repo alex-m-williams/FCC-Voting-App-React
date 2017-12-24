@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-
 import { LabeledArc } from "./Arc";
 import * as d3 from "d3";
 
