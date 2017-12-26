@@ -19,7 +19,7 @@ passport.use(
     {
       consumerKey: process.env.CONSUMER_KEY,
       consumerSecret: process.env.CONSUMER_SECRET,
-      callbackURL: "http://127.0.0.1:3000/login/twitter/return"
+      callbackURL: "http://127.0.0.1:5000/login/twitter/return"
     },
     function(token, tokenSecret, profile, cb) {
       // In this example, the user's Twitter profile is supplied as the user
@@ -61,6 +61,15 @@ app.use(
     saveUninitialized: true
   })
 );
+
+// app.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
 
 // Initialize Passport and restore authentication state, if any, from the
 // session.
