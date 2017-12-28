@@ -29,15 +29,6 @@ class App extends Component {
       .catch(err => console.log(err));
   }
 
-  twitterLogin = async () => {
-    const response = await fetch("/login/twitter");
-    const body = await response.json();
-
-    if (response.status !== 200) throw Error(body.message);
-
-    return body;
-  };
-
   callApi = async () => {
     const response = await fetch("/api/hello");
     const body = await response.json();
@@ -65,13 +56,13 @@ class App extends Component {
             title={this.state.response}
             onLeftIconButtonClick={this.handleToggle}
             iconElementRight={
-              <Link to="/login/twitter">
+              <a href="/api/login/twitter">
                 <RaisedButton
                   label="Log in with Twitter"
                   secondary={true}
                   style={style}
                 />
-              </Link>
+              </a>
             }
           />
 

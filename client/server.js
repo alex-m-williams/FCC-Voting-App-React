@@ -2,6 +2,8 @@ const express = require("express");
 
 const app = express();
 const port = process.env.PORT || 5000;
+const cors = require("cors");
+app.use(cors());
 
 //https://github.com/passport/express-4.x-twitter-example/blob/master/server.js
 var passport = require("passport");
@@ -19,7 +21,7 @@ passport.use(
     {
       consumerKey: process.env.CONSUMER_KEY,
       consumerSecret: process.env.CONSUMER_SECRET,
-      callbackURL: "http://127.0.0.1:5000/login/twitter/return"
+      callbackURL: "http://127.0.0.1:3000/api/login/twitter/return"
     },
     function(token, tokenSecret, profile, cb) {
       // In this example, the user's Twitter profile is supplied as the user
@@ -62,15 +64,6 @@ app.use(
   })
 );
 
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept"
-//   );
-//   next();
-// });
-
 // Initialize Passport and restore authentication state, if any, from the
 // session.
 app.use(passport.initialize());
@@ -80,25 +73,36 @@ app.get("/api/hello", (req, res) => {
   res.send({ express: "Hello From Express" });
 });
 
-app.get("/login", function(req, res) {
+app.get("/api/login", function(req, res) {
   res.render("login");
 });
 
-app.get("/login/twitter", passport.authenticate("twitter"));
+app.get("/api/login/twitter", passport.authenticate("twitter"));
 
 app.get(
-  "/login/twitter/return",
-  passport.authenticate("twitter", { failureRedirect: "/login" }),
+  "/api/login/twitter/return",
+  passport.authenticate("twitter", { failureRedirect: "/api/login" }),
   function(req, res) {
     res.redirect("/");
   }
 );
 
-app.get("/profile", require("connect-ensure-login").ensureLoggedIn(), function(
-  req,
-  res
-) {
-  res.render("profile", { user: req.user });
-});
+app.get(
+  "/api/profile",
+  require("connect-ensure-login").ensureLoggedIn(),
+  function(req, res) {
+    if (!req.isAuthenticated || !req.isAuthenticated()) {
+      res.send({
+        success: false,
+        message: "You need to be authenticated to access this page!"
+      });
+    } else {
+      res.send({
+        success: true,
+        user: req.user
+      });
+    }
+  }
+);
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
