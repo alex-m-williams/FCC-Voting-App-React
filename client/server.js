@@ -59,10 +59,12 @@ app.use(require("body-parser").urlencoded({ extended: true }));
 app.use(
   require("express-session")({
     secret: "keyboard cat",
-    resave: true,
+    resave: false,
+    proxy: true,
     saveUninitialized: true
   })
 );
+app.set("trust proxy", 1);
 
 // Initialize Passport and restore authentication state, if any, from the
 // session.
@@ -73,36 +75,44 @@ app.get("/api/hello", (req, res) => {
   res.send({ express: "Hello From Express" });
 });
 
-app.get("/api/login", function(req, res) {
-  res.render("login");
-});
-
 app.get("/api/login/twitter", passport.authenticate("twitter"));
 
 app.get(
   "/api/login/twitter/return",
   passport.authenticate("twitter", { failureRedirect: "/api/login" }),
   function(req, res) {
+    console.log(req.sessionID);
     res.redirect("/");
   }
 );
 
-app.get(
-  "/api/profile",
-  require("connect-ensure-login").ensureLoggedIn(),
-  function(req, res) {
-    if (!req.isAuthenticated || !req.isAuthenticated()) {
-      res.send({
+app.get("/api/profile", function(req, res) {
+  res.setHeader("Content-Type", "application/json");
+  if (!req.isAuthenticated()) {
+    res.send(
+      JSON.stringify({
         success: false,
         message: "You need to be authenticated to access this page!"
-      });
-    } else {
-      res.send({
+      })
+    );
+  } else {
+    res.send(
+      JSON.stringify({
         success: true,
         user: req.user
-      });
-    }
+      })
+    );
   }
-);
+});
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    // req.user is available for use here
+    return next();
+  }
+
+  // denied. redirect to login
+  res.redirect("/");
+}
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

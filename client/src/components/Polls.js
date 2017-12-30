@@ -46,7 +46,7 @@ class Polls extends Component {
           <Paper>
             <h2>
               Polls Select a poll to view results
-              {this.props.authed == true ? (
+              {this.props.authed == false ? (
                 "and log in to create a poll"
               ) : (
                 <RaisedButton

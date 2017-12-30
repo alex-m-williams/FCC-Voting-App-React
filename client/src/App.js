@@ -19,13 +19,17 @@ class App extends Component {
     this.state = {
       open: false,
       authed: false,
-      response: ""
+      response: "",
+      profileResponse: ""
     };
   }
 
   componentDidMount() {
     this.callApi()
       .then(res => this.setState({ response: res.express }))
+      .catch(err => console.log(err));
+    this.loggedIn()
+      .then()
       .catch(err => console.log(err));
   }
 
@@ -34,6 +38,25 @@ class App extends Component {
     const body = await response.json();
 
     if (response.status !== 200) throw Error(body.message);
+    return body;
+  };
+
+  loggedIn = async () => {
+    const response = await fetch("/api/profile", {
+      credentials: "include",
+      headers: new Headers({
+        "Content-Type": "application/json"
+      })
+    });
+    const body = await response.json();
+
+    if (response.status !== 200) throw Error(body.message);
+    if (body.success == true) {
+      this.setState({
+        authed: true,
+        profileResponse: body.user
+      });
+    }
 
     return body;
   };
@@ -49,6 +72,12 @@ class App extends Component {
     });
 
   render() {
+    let displayName = "";
+    if (this.state.authed == true) {
+      let userInfo = this.state.profileResponse;
+      displayName = userInfo.displayName;
+      console.log(displayName);
+    }
     return (
       <Router>
         <MuiThemeProvider>
@@ -56,13 +85,17 @@ class App extends Component {
             title={this.state.response}
             onLeftIconButtonClick={this.handleToggle}
             iconElementRight={
-              <a href="/api/login/twitter">
-                <RaisedButton
-                  label="Log in with Twitter"
-                  secondary={true}
-                  style={style}
-                />
-              </a>
+              this.state.authed == false ? (
+                <a href="/api/login/twitter">
+                  <RaisedButton
+                    label="Log in with Twitter"
+                    secondary={true}
+                    style={style}
+                  />
+                </a>
+              ) : (
+                <div>{displayName}</div>
+              )
             }
           />
 
