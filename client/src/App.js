@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Drawer from "material-ui/Drawer";
 import MenuItem from "material-ui/MenuItem";
 import Polls from "./components/Polls";
+import Login from "./components/Login";
 
 const style = {
   margin: 12
@@ -72,12 +73,6 @@ class App extends Component {
     });
 
   render() {
-    let displayName = "";
-    if (this.state.authed == true) {
-      let userInfo = this.state.profileResponse;
-      displayName = userInfo.displayName;
-      console.log(displayName);
-    }
     return (
       <Router>
         <MuiThemeProvider>
@@ -94,7 +89,7 @@ class App extends Component {
                   />
                 </a>
               ) : (
-                <div>{displayName}</div>
+                <Login profileResponse={this.state.profileResponse} />
               )
             }
           />
