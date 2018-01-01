@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "../css/Login.css";
+import RaisedButton from "material-ui/RaisedButton";
 
 class Login extends Component {
   constructor(props) {
@@ -16,38 +17,33 @@ class Login extends Component {
   };
 
   render() {
-    let expandedStyle = {
+    const expandedStyle = {
       display: "block",
-      position: "absolute",
-      top: "50%",
-      backgroundColor: "lightgray",
-      width: "150px",
-      height: "60px",
-      animation: "slide 1s forwards",
-      zIndex: "999"
+      top: "50%"
     };
-    let closedStyle = {
-      display: "none"
+
+    const style = {
+      margin: 12
     };
-    let loginStyle = {
-      position: "relative",
-      top: "-25%"
-    };
+
+    const closedStyle = {};
 
     let userInfo = this.props.profileResponse;
     let displayName = userInfo.displayName;
     let profilePicture = userInfo.photos[0].value;
     return (
-      <div>
-        <img src={profilePicture} />
-        <span style={loginStyle} onClick={this.toggleExpandedState}>
-          {displayName}
-        </span>
-        <div
-          style={this.state.expanded === true ? expandedStyle : closedStyle}
-          className="login"
-        />
-      </div>
+      <React.Fragment>
+        <div className="login-root">
+          <img src={profilePicture} />
+          <span onClick={this.toggleExpandedState}>{displayName}</span>
+          <div
+            className="login-slide"
+            style={this.state.expanded === true ? expandedStyle : closedStyle}
+          >
+            <RaisedButton label="Logout" secondary={true} style={style} />
+          </div>
+        </div>
+      </React.Fragment>
     );
   }
 }

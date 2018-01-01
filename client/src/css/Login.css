@@ -1,5 +1,20 @@
+.login-root {
+  position: absolute;
+  width: 150px;
+  left: 85%;
+  background-color: rgb(0, 188, 212);
+}
+.login-slide {
+  background-color: lightgray;
+  position: absolute;
+  display: none;
+  height: 60px;
+  animation: slide 1s forwards;
+  z-index: -1;
+}
+
 @keyframes slide {
   100% {
-    top: 100%;
+    top: 110%;
   }
 }
