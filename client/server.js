@@ -9,6 +9,11 @@ app.use(cors());
 var passport = require("passport");
 var Strategy = require("passport-twitter").Strategy;
 
+const dbUser = process.env.DBUSER;
+const dbPW = process.env.DBPW;
+const dburl = `mongodb://${dbUser}:${dbPW}@ds237967.mlab.com:37967/fccvotingapp`;
+const mongo = require("mongodb").MongoClient;
+
 // Configure the Twitter strategy for use by Passport.
 //
 // OAuth 1.0-based strategies require a `verify` function which receives the
@@ -114,5 +119,7 @@ function ensureAuthenticated(req, res, next) {
   // denied. redirect to login
   res.redirect("/");
 }
+
+mongo.connect(dburl, (err, database) => {});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
