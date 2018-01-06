@@ -3,6 +3,7 @@ import Poll from "./Poll";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
+import TextField from "material-ui/TextField";
 
 const style = {
   margin: 12
@@ -13,7 +14,8 @@ class Polls extends Component {
     super(props);
     this.state = {
       pollOpen: false,
-      pollIdentifiers: ["rendering", "components", "props-v-state"]
+      pollIdentifiers: ["rendering", "components", "props-v-state"],
+      pollCreatorOpen: false
     };
   }
 
@@ -29,7 +31,30 @@ class Polls extends Component {
     });
   };
 
+  openPollCreator = () => {
+    this.setState({
+      pollCreatorOpen: true
+    });
+  };
+
+  closePollCreator = () => {
+    this.setState({
+      pollCreatorOpen: false
+    });
+  };
+
   render() {
+    let opac = this.state.pollCreatorOpen ? 0.3 : 1;
+    let pollsStyle = {
+      height: "85vh",
+      opacity: opac
+    };
+    let pollCreatorStyle = {
+      position: "absolute",
+      height: "500px",
+      width: "500px"
+    };
+
     let polls = this.state.pollIdentifiers.map(poll => {
       return (
         <li>
@@ -41,7 +66,7 @@ class Polls extends Component {
     });
 
     return (
-      <React.Fragment>
+      <div style={pollsStyle}>
         {this.state.pollOpen === false ? (
           <Paper>
             <h2>
@@ -71,7 +96,17 @@ class Polls extends Component {
             />
           </React.Fragment>
         )}
-      </React.Fragment>
+        {this.state.pollCreatorOpen === true ? (
+          <div>
+            <form action="/api/addpoll" method="POST">
+              <TextField type="text" name="title" hintText="Poll Name" />
+              <RaisedButton label="Make a New Poll" secondary={true} />
+            </form>
+          </div>
+        ) : (
+          <div />
+        )}
+      </div>
     );
   }
 }

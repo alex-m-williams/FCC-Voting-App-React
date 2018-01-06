@@ -86,12 +86,11 @@ app.get(
   "/api/login/twitter/return",
   passport.authenticate("twitter", { failureRedirect: "/api/login" }),
   function(req, res) {
-    console.log(req.sessionID);
     res.redirect("/");
   }
 );
 
-app.get("/api/profile", function(req, res) {
+app.get("/api/profile", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   if (!req.isAuthenticated()) {
     res.send(
@@ -108,6 +107,7 @@ app.get("/api/profile", function(req, res) {
       })
     );
   }
+  res.end();
 });
 
 function ensureAuthenticated(req, res, next) {
@@ -120,6 +120,32 @@ function ensureAuthenticated(req, res, next) {
   res.redirect("/");
 }
 
-mongo.connect(dburl, (err, database) => {});
+//query list of polls in db
+app.get("/api/listpolls", (req, res) => {
+  mongo.connect(dburl, (err, database) => {
+    const myAwesomeDB = database.db("fccvotingapp");
+    let docs = myAwesomeDB.collection("polls");
+    let obj = { success: true };
+    docs.insert(obj, (err, data) => {
+      if (err) throw err;
+      console.log(JSON.stringify(obj));
+    });
+    database.close();
+  });
+  res.setHeader("Content-Type", "application/json");
+  res.send(
+    JSON.stringify({
+      success: true
+    })
+  );
+  res.end();
+});
+
+//add poll to db
+app.post("/api/addpoll", (req, res) => {
+  mongo.connect(dburl, (err, database) => {
+    database.close();
+  });
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
