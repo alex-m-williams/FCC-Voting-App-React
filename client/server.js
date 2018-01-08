@@ -130,7 +130,7 @@ app.get("/api/listpolls", (req, res) => {
     docs.find({}).toArray((err, result) => {
       if (err) throw err;
       for (let i = 0; i < result.length; i++) {
-        pollNames.push({ pollName: result[i].pollName, id: result[i].id });
+        pollNames.push({ pollName: result[i].pollName, id: result[i]._id });
       }
       res.send(
         JSON.stringify({
