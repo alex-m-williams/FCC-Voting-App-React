@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import Poll from "./Poll";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Paper from "material-ui/Paper";
@@ -15,10 +16,16 @@ class Polls extends Component {
     super(props);
     this.state = {
       pollOpen: false,
-      pollIdentifiers: ["rendering", "components", "props-v-state"],
+      pollIdentifiers: [],
       pollCreatorOpen: false,
-      fireRedirect: false
+      pollName: ""
     };
+  }
+
+  componentWillUpdate() {
+    this.fetchPolls()
+      .then()
+      .catch(err => console.log(err));
   }
 
   openPoll = () => {
@@ -39,41 +46,42 @@ class Polls extends Component {
     });
   };
 
-  sendFormData = () => {
+  handlePollNameChange = event => {
+    this.setState({ pollName: event.target.value });
+  };
+
+  onSubmit = e => {
+    e.preventDefault();
     // Fetch form values.
-    var formData = {
-      budget: React.findDOMNode(this.refs.budget).value,
-      company: React.findDOMNode(this.refs.company).value,
-      email: React.findDOMNode(this.refs.email).value
-    };
 
     // Send the form data.
     var xmlhttp = new XMLHttpRequest();
-    var _this = this;
-    xmlhttp.onreadystatechange = function() {
-      if (xmlhttp.readyState === 4) {
-        var response = JSON.parse(xmlhttp.responseText);
-        if (xmlhttp.status === 200 && response.status === "OK") {
-          _this.setState({
-            type: "success",
-            message:
-              "We have received your message and will get in touch shortly. Thanks!"
-          });
-        } else {
-          _this.setState({
-            type: "danger",
-            message:
-              "Sorry, there has been an error. Please try again later or send us an email at info@example.com."
-          });
-        }
-      }
-    };
-    xmlhttp.open("POST", "send", true);
+    xmlhttp.open("POST", `/api/addpoll?pollName=${this.state.pollName}`, true);
     xmlhttp.setRequestHeader(
       "Content-type",
       "application/x-www-form-urlencoded"
     );
-    xmlhttp.send(this.requestBuildQueryString(formData));
+    xmlhttp.send();
+    this.openPollCreator();
+  };
+
+  fetchPolls = async () => {
+    const response = await fetch("/api/profile", {
+      headers: new Headers({
+        "Content-Type": "application/json"
+      })
+    });
+
+    const body = await response.json();
+
+    if (response.status !== 200) throw Error(body.message);
+    if (body.success == true) {
+      this.setState({
+        pollIdentifiers: body.polls
+      });
+    }
+
+    return body;
   };
 
   render() {
@@ -148,12 +156,17 @@ class Polls extends Component {
         <React.Fragment>
           {this.state.pollCreatorOpen === true ? (
             <div style={pollCreatorStyle}>
-              <form action="/api/addpoll" method="POST">
+              <form
+                action="/api/addpoll"
+                method="POST"
+                onSubmit={this.onSubmit}
+              >
                 <TextField
-                  ref="pollName"
+                  value={this.state.pollName}
                   type="text"
                   name="title"
                   hintText="Poll Name"
+                  onChange={this.handlePollNameChange}
                 />
                 <RaisedButton
                   type="submit"
@@ -161,7 +174,6 @@ class Polls extends Component {
                   secondary={true}
                 />
               </form>
-              {fireRedirect && <Redirect to={from || "/polls"} />}
             </div>
           ) : (
             <div />

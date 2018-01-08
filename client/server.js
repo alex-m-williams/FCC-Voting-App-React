@@ -122,31 +122,53 @@ function ensureAuthenticated(req, res, next) {
 
 //query list of polls in db
 app.get("/api/listpolls", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+
   mongo.connect(dburl, (err, database) => {
-    const myAwesomeDB = database.db("fccvotingapp");
-    let docs = myAwesomeDB.collection("polls");
-    let obj = { success: true };
-    docs.insert(obj, (err, data) => {
+    let docs = database.db("fccvotingapp").collection("polls");
+    let pollNames = [];
+    docs.find({}).toArray((err, result) => {
       if (err) throw err;
-      console.log(JSON.stringify(obj));
+      for (let i = 0; i < result.length; i++) {
+        pollNames.push({ pollName: result[i].pollName, id: result[i].id });
+      }
+      res.send(
+        JSON.stringify({
+          polls: pollNames
+        })
+      );
+      res.end();
     });
+
     database.close();
   });
-  res.setHeader("Content-Type", "application/json");
-  res.send(
-    JSON.stringify({
-      success: true
-    })
-  );
-  res.end();
 });
 
 //add poll to db
 app.post("/api/addpoll", (req, res) => {
-  return res.send({ status: "OK" });
-  // mongo.connect(dburl, (err, database) => {
-  //   database.close();
-  // });
+  if (!req.isAuthenticated()) {
+    res.send(
+      JSON.stringify({
+        success: false,
+        message: "You need to be authenticated to add a poll!"
+      })
+    );
+  } else {
+    obj = { pollName: req.query.pollName, pollQuestions: [], pollVotes: [] };
+    mongo.connect(dburl, (err, database) => {
+      let docs = database.db("fccvotingapp").collection("polls");
+      docs.insert(obj, (err, data) => {
+        if (err) throw err;
+      });
+      res.send(
+        JSON.stringify({
+          success: true,
+          docAdded: obj
+        })
+      );
+      database.close();
+    });
+  }
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
