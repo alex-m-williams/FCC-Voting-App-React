@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import Piechart from "./Piechart";
-import { BrowserRouter as Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 class Poll extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      pollName: "",
+      pollID: "",
       voteOptions: ["a", "b", "c", "d"],
       votes: [3, 5, 45, 55]
     };

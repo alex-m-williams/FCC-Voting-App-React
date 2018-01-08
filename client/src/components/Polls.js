@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Poll from "./Poll";
-import { BrowserRouter as Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
@@ -14,6 +14,7 @@ class Polls extends Component {
     super(props);
     this.state = {
       pollOpen: false,
+      openPollID: "",
       pollIdentifiers: [],
       pollCreatorOpen: false,
       pollName: ""
@@ -26,9 +27,10 @@ class Polls extends Component {
       .catch(err => console.log(err));
   }
 
-  openPoll = () => {
+  openPoll = id => {
     this.setState({
-      pollOpen: true
+      pollOpen: true,
+      openPollID: id
     });
   };
 
@@ -73,12 +75,13 @@ class Polls extends Component {
     const body = await response.json();
 
     if (response.status !== 200) throw Error(body.message);
-
-    let pollNames = body.polls.map(poll => {
-      return poll.pollName;
+    let pollIDs = [];
+    body.polls.forEach(poll => {
+      pollIDs.push(poll);
     });
+
     this.setState({
-      pollIdentifiers: pollNames
+      pollIdentifiers: pollIDs
     });
     return body;
   };
@@ -105,8 +108,11 @@ class Polls extends Component {
     let polls = this.state.pollIdentifiers.map((poll, i) => {
       return (
         <li key={i}>
-          <Link to={`${this.props.match.url}/${poll}`} onClick={this.openPoll}>
-            {poll}
+          <Link
+            to={`${this.props.match.url}/${poll.pollName}`}
+            onClick={() => this.openPoll(poll.id)}
+          >
+            {poll.pollName}
           </Link>
         </li>
       );
