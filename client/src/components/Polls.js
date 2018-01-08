@@ -22,7 +22,7 @@ class Polls extends Component {
     };
   }
 
-  componentWillUpdate() {
+  componentDidMount() {
     this.fetchPolls()
       .then()
       .catch(err => console.log(err));
@@ -66,7 +66,7 @@ class Polls extends Component {
   };
 
   fetchPolls = async () => {
-    const response = await fetch("/api/profile", {
+    const response = await fetch("/api/listpolls", {
       headers: new Headers({
         "Content-Type": "application/json"
       })
@@ -75,12 +75,15 @@ class Polls extends Component {
     const body = await response.json();
 
     if (response.status !== 200) throw Error(body.message);
-    if (body.success == true) {
-      this.setState({
-        pollIdentifiers: body.polls
-      });
-    }
 
+    console.log("hi");
+    let pollNames = body.polls.map(poll => {
+      return poll.pollName;
+    });
+    console.log(pollNames);
+    this.setState({
+      pollIdentifiers: pollNames
+    });
     return body;
   };
 
