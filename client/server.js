@@ -143,9 +143,10 @@ app.get("/api/listpolls", (req, res) => {
 
 //add poll to db
 app.post("/api/addpoll", (req, res) => {
-  mongo.connect(dburl, (err, database) => {
-    database.close();
-  });
+  return res.send({ status: "OK" });
+  // mongo.connect(dburl, (err, database) => {
+  //   database.close();
+  // });
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
