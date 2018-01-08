@@ -1,11 +1,9 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
 import Poll from "./Poll";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Route, Link } from "react-router-dom";
 import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
-import { Redirect } from "react-router";
 
 const style = {
   margin: 12
@@ -76,11 +74,9 @@ class Polls extends Component {
 
     if (response.status !== 200) throw Error(body.message);
 
-    console.log("hi");
     let pollNames = body.polls.map(poll => {
       return poll.pollName;
     });
-    console.log(pollNames);
     this.setState({
       pollIdentifiers: pollNames
     });
@@ -105,12 +101,10 @@ class Polls extends Component {
       paddingTop: "5%",
       paddingBottom: "5%"
     };
-    const { from } = this.props.location.state || "/";
-    const { fireRedirect } = this.state;
 
-    let polls = this.state.pollIdentifiers.map(poll => {
+    let polls = this.state.pollIdentifiers.map((poll, i) => {
       return (
-        <li>
+        <li key={i}>
           <Link to={`${this.props.match.url}/${poll}`} onClick={this.openPoll}>
             {poll}
           </Link>
@@ -126,7 +120,7 @@ class Polls extends Component {
               <Paper>
                 <h2>
                   Polls Select a poll to view results
-                  {this.props.authed == false ? (
+                  {this.props.authed === false ? (
                     "and log in to create a poll"
                   ) : (
                     <RaisedButton

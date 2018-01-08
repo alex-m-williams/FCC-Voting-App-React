@@ -34,7 +34,7 @@ class Login extends Component {
     return (
       <React.Fragment>
         <div className="login-root">
-          <img src={profilePicture} />
+          <img src={profilePicture} alt="twitter profile" />
           <span onClick={this.toggleExpandedState}>{displayName}</span>
           <div
             className="login-slide"
