@@ -1,0 +1,12 @@
+.question-popout {
+  position: absolute;
+  width: 50%;
+  opacity: 1;
+  top: 20%;
+  margin: auto;
+  text-align: center;
+  left: 25%;
+  background-color: lightgray;
+  padding-top: 5%;
+  padding-bottom: 5%;
+}

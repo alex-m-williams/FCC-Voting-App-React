@@ -5,6 +5,8 @@ import Paper from "material-ui/Paper";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 
+import "../css/Input.css";
+
 const style = {
   margin: 12
 };
@@ -144,7 +146,11 @@ class Polls extends Component {
                 <Route
                   path={`${this.props.match.url}/:PollId`}
                   render={props => (
-                    <Poll closePoll={this.closePoll} {...props} />
+                    <Poll
+                      closePoll={this.closePoll}
+                      pollID={this.state.openPollID}
+                      {...props}
+                    />
                   )}
                 />
                 <Route
