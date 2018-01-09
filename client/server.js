@@ -151,7 +151,7 @@ app.get("/api/listquestions", (req, res) => {
       if (err) throw err;
       res.send(
         JSON.stringify({
-          polls: doc.pollQuestions,
+          pollQuestions: doc.pollQuestions,
           pollVotes: doc.pollVotes
         })
       );

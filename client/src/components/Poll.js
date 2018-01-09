@@ -29,7 +29,7 @@ class Poll extends Component {
   }
 
   componentDidMount() {
-    this.fetchQuestions()
+    this.fetchQuestionsAndVotes()
       .then()
       .catch(err => console.log(err));
   }
@@ -51,13 +51,12 @@ class Poll extends Component {
     const body = await response.json();
 
     if (response.status !== 200) throw Error(body.message);
-    let pollIDs = [];
-    body.polls.forEach(poll => {
-      pollIDs.push(poll);
-    });
+    console.log(body.pollQuestions);
+    console.log(body.pollVotes);
 
     this.setState({
-      pollIdentifiers: pollIDs
+      voteOptions: body.pollQuestions,
+      votes: body.pollVotes
     });
     return body;
   };
