@@ -9,10 +9,12 @@ app.use(cors());
 var passport = require("passport");
 var Strategy = require("passport-twitter").Strategy;
 
+//MONGO setup
 const dbUser = process.env.DBUSER;
 const dbPW = process.env.DBPW;
 const dburl = `mongodb://${dbUser}:${dbPW}@ds237967.mlab.com:37967/fccvotingapp`;
 const mongo = require("mongodb").MongoClient;
+var ObjectId = require("mongodb").ObjectId;
 
 // Configure the Twitter strategy for use by Passport.
 //
@@ -135,6 +137,29 @@ app.get("/api/listpolls", (req, res) => {
       res.send(
         JSON.stringify({
           polls: pollNames
+        })
+      );
+      res.end();
+    });
+
+    database.close();
+  });
+});
+
+app.get("/api/listquestions", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+
+  mongo.connect(dburl, (err, database) => {
+    let docs = database.db("fccvotingapp").collection("polls");
+    docs.findOne({ _id: new ObjectId(req.query.questionid) }, function(
+      err,
+      doc
+    ) {
+      console.log(doc);
+      if (err) throw err;
+      res.send(
+        JSON.stringify({
+          polls: doc.pollQuestions
         })
       );
       res.end();

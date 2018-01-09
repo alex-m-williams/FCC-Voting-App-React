@@ -28,9 +28,33 @@ class Poll extends Component {
     this.props.closePoll();
   }
 
-  addQuestionToPoll() {
+  addQuestionToPoll = () => {
     //this.props.pollID
-  }
+  };
+
+  fetchQuestions = async () => {
+    const response = await fetch(
+      `/api/listquestions?questionid=${this.props.pollID}`,
+      {
+        headers: new Headers({
+          "Content-Type": "application/json"
+        })
+      }
+    );
+
+    const body = await response.json();
+
+    if (response.status !== 200) throw Error(body.message);
+    let pollIDs = [];
+    body.polls.forEach(poll => {
+      pollIDs.push(poll);
+    });
+
+    this.setState({
+      pollIdentifiers: pollIDs
+    });
+    return body;
+  };
 
   render() {
     let data = this.state.votes.map((vote, i) => {
