@@ -51,8 +51,6 @@ class Poll extends Component {
     const body = await response.json();
 
     if (response.status !== 200) throw Error(body.message);
-    console.log(body.pollQuestions);
-    console.log(body.pollVotes);
 
     this.setState({
       voteOptions: body.pollQuestions,
@@ -71,6 +69,11 @@ class Poll extends Component {
       height: "85vh",
       opacity: opac
     };
+
+    //list poll questions
+    let pollQuestions = this.state.voteOptions.map((question, i) => {
+      return <li key={i}>{question}</li>;
+    });
     return (
       <React.Fragment>
         <div style={pollStyle}>
@@ -88,16 +91,25 @@ class Poll extends Component {
             )}
           />
           <h3>{this.props.match.params.PollId}</h3>
+
           {this.state.voteOptions.length !== 0 ? (
-            <svg xmlns="http://www.w3.org/2000/svg">
-              <Piechart
-                x={100}
-                y={100}
-                outerRadius={100}
-                innerRadius={50}
-                data={data}
-              />
-            </svg>
+            <React.Fragment>
+              <ul style={{ display: "inline-block" }}>{pollQuestions}</ul>
+              <div style={{ display: "inline-block" }}>
+                <svg
+                  style={{ height: "200px" }}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <Piechart
+                    x={100}
+                    y={100}
+                    outerRadius={100}
+                    innerRadius={50}
+                    data={data}
+                  />
+                </svg>
+              </div>
+            </React.Fragment>
           ) : (
             <div>This poll doesn't have any votes yet</div>
           )}
