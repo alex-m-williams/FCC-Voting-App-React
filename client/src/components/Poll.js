@@ -28,11 +28,17 @@ class Poll extends Component {
     this.props.closePoll();
   }
 
+  componentDidMount() {
+    this.fetchQuestions()
+      .then()
+      .catch(err => console.log(err));
+  }
+
   addQuestionToPoll = () => {
     //this.props.pollID
   };
 
-  fetchQuestions = async () => {
+  fetchQuestionsAndVotes = async () => {
     const response = await fetch(
       `/api/listquestions?questionid=${this.props.pollID}`,
       {

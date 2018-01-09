@@ -112,16 +112,6 @@ app.get("/api/profile", (req, res) => {
   res.end();
 });
 
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    // req.user is available for use here
-    return next();
-  }
-
-  // denied. redirect to login
-  res.redirect("/");
-}
-
 //query list of polls in db
 app.get("/api/listpolls", (req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -146,6 +136,8 @@ app.get("/api/listpolls", (req, res) => {
   });
 });
 
+//return questions and votes by id, unauthenticated
+//usage: /api/listquestions?questionid=${id}
 app.get("/api/listquestions", (req, res) => {
   res.setHeader("Content-Type", "application/json");
 
@@ -159,7 +151,8 @@ app.get("/api/listquestions", (req, res) => {
       if (err) throw err;
       res.send(
         JSON.stringify({
-          polls: doc.pollQuestions
+          polls: doc.pollQuestions,
+          pollVotes: doc.pollVotes
         })
       );
       res.end();
@@ -169,7 +162,8 @@ app.get("/api/listquestions", (req, res) => {
   });
 });
 
-//add poll to db
+//add poll to db, must be authenticated
+//usage: /api/addpoll?pollName=${pollname}
 app.post("/api/addpoll", (req, res) => {
   if (!req.isAuthenticated()) {
     res.send(
