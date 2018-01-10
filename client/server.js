@@ -68,7 +68,7 @@ app.use(
     secret: "keyboard cat",
     resave: false,
     proxy: true,
-    saveUninitialized: true
+    saveUninitialized: false
   })
 );
 app.set("trust proxy", 1);
@@ -91,6 +91,15 @@ app.get(
     res.redirect("/");
   }
 );
+
+//logout
+app.get("/logout", function(req, res) {
+  req.session.destroy(() => {
+    req.logOut();
+
+    res.redirect("/");
+  });
+});
 
 app.get("/api/profile", (req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -147,7 +156,6 @@ app.get("/api/listquestions", (req, res) => {
       err,
       doc
     ) {
-      console.log(doc);
       if (err) throw err;
       res.send(
         JSON.stringify({

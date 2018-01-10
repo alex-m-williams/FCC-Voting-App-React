@@ -65,6 +65,9 @@ class Polls extends Component {
     );
     xmlhttp.send();
     this.openPollCreator();
+    this.fetchPolls()
+      .then()
+      .catch(err => console.log(err));
   };
 
   fetchPolls = async () => {

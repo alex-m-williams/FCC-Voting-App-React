@@ -16,6 +16,10 @@ class Login extends Component {
     });
   };
 
+  logOut = () => {
+    window.location = "/logout";
+  };
+
   render() {
     const expandedStyle = {
       display: "block",
@@ -40,7 +44,12 @@ class Login extends Component {
             className="login-slide"
             style={this.state.expanded === true ? expandedStyle : closedStyle}
           >
-            <RaisedButton label="Logout" secondary={true} style={style} />
+            <RaisedButton
+              label="Logout"
+              secondary={true}
+              style={style}
+              onClick={this.logOut}
+            />
           </div>
         </div>
       </React.Fragment>
