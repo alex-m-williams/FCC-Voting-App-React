@@ -54,20 +54,33 @@ class Polls extends Component {
 
   onSubmit = e => {
     e.preventDefault();
-    // Fetch form values.
 
-    // Send the form data.
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", `/api/addpoll?pollName=${this.state.pollName}`, true);
-    xmlhttp.setRequestHeader(
-      "Content-type",
-      "application/x-www-form-urlencoded"
-    );
-    xmlhttp.send();
+    this.addPoll()
+      .then()
+      .catch(err => console.log(err));
     this.openPollCreator();
     this.fetchPolls()
       .then()
       .catch(err => console.log(err));
+  };
+
+  addPoll = async () => {
+    const response = await fetch(
+      `/api/addpoll?pollName=${this.state.pollName}`,
+      {
+        headers: new Headers({
+          "Content-Type": "application/x-www-form-urlencoded"
+        }),
+        credentials: "include",
+        method: "post"
+      }
+    );
+
+    const body = await response.json();
+
+    if (response.status !== 200) throw Error(body.message);
+
+    return body;
   };
 
   fetchPolls = async () => {
