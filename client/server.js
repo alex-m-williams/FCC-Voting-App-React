@@ -198,4 +198,24 @@ app.post("/api/addpoll", (req, res) => {
   }
 });
 
+//add question to poll, doesn't need to be authenticated
+//usage: /api/addpoll?pollName=${pollname}&question=${question}
+app.post("/api/addquestion", (req, res) => {
+  mongo.connect(dburl, (err, database) => {
+    let docs = database.db("fccvotingapp").collection("polls");
+
+    database.close();
+  });
+});
+
+//vote on a question, doesn't need to be authenticated
+//usage: /api/addvote?pollName=${pollname}&question=${question}
+app.post("/api/addvote", (req, res) => {
+  mongo.connect(dburl, (err, database) => {
+    let docs = database.db("fccvotingapp").collection("polls");
+
+    database.close();
+  });
+});
+
 app.listen(port, () => console.log(`Listening on port ${port}`));
