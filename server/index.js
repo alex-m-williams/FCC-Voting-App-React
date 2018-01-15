@@ -78,6 +78,9 @@ app.set("trust proxy", 1);
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Priority serve any static files.
+app.use(express.static(path.resolve(__dirname, "../client/build")));
+
 app.get("/api/hello", (req, res) => {
   res.send({ express: "Hello From Express" });
 });
@@ -266,6 +269,11 @@ app.post("/api/addvote", (req, res) => {
       }
     );
   });
+});
+
+// All remaining requests return the React app, so it can handle routing.
+app.get("*", function(request, response) {
+  response.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
