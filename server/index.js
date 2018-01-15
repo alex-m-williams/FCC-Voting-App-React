@@ -9,6 +9,8 @@ app.use(cors());
 var passport = require("passport");
 var Strategy = require("passport-twitter").Strategy;
 
+const path = require("path");
+
 //MONGO setup
 const dbUser = process.env.DBUSER;
 const dbPW = process.env.DBPW;
