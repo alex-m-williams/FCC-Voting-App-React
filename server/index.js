@@ -30,7 +30,7 @@ passport.use(
     {
       consumerKey: process.env.CONSUMER_KEY,
       consumerSecret: process.env.CONSUMER_SECRET,
-      callbackURL: "http://127.0.0.1:3000/api/login/twitter/return"
+      callbackURL: process.env.CALLBACK
     },
     function(token, tokenSecret, profile, cb) {
       // In this example, the user's Twitter profile is supplied as the user
