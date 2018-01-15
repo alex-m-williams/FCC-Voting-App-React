@@ -2,15 +2,20 @@
   "name": "example-create-react-app-express",
   "version": "1.0.0",
   "scripts": {
+    "build":
+      "concurrently \"cd client && yarn build\" \"cd server && yarn build\"",
     "client": "cd client && yarn start",
-    "server": "cd client && node server.js",
-    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+    "server": "cd server && node server.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "start:prod": "cd client && yarn start:prod",
+    "heroku-postbuild": "yarn build"
   },
   "dependencies": {
+    "concurrently": "^3.5.0",
     "create-react-app": "^1.4.3",
+    "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "passport": "^0.4.0",
-    "passport-twitter": "^1.0.4",
-    "concurrently": "^3.5.0"
+    "passport-twitter": "^1.0.4"
   }
 }
