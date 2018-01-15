@@ -121,6 +121,29 @@ app.get("/api/profile", (req, res) => {
   res.end();
 });
 
+app.get("/users/alexwilliams567/listpolls", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+
+  mongo.connect(dburl, (err, database) => {
+    let docs = database.db("fccvotingapp").collection("polls");
+    let pollNames = [];
+    docs.find({ user: "alexwilliams567" }).toArray((err, result) => {
+      if (err) throw err;
+      for (let i = 0; i < result.length; i++) {
+        pollNames.push({ pollName: result[i].pollName, id: result[i]._id });
+      }
+      res.send(
+        JSON.stringify({
+          polls: pollNames
+        })
+      );
+      res.end();
+    });
+
+    database.close();
+  });
+});
+
 //query list of polls in db
 app.get("/api/listpolls", (req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -208,7 +231,6 @@ app.post("/api/addquestion", (req, res) => {
       { _id: new ObjectId(req.query.pollid) },
       { $push: { pollQuestions: req.query.question, pollVotes: 0 } },
       (err, result) => {
-        console.log(result);
         res.send(
           JSON.stringify({
             success: true
