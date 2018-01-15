@@ -2,8 +2,6 @@
   "name": "example-create-react-app-express",
   "version": "1.0.0",
   "scripts": {
-    "build":
-      "concurrently \"cd client && yarn build\" \"cd server && yarn build\"",
     "client": "cd client && yarn start",
     "server": "cd server && node server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
