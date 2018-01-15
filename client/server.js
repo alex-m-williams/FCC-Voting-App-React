@@ -199,12 +199,24 @@ app.post("/api/addpoll", (req, res) => {
 });
 
 //add question to poll, doesn't need to be authenticated
-//usage: /api/addpoll?pollName=${pollname}&question=${question}
-app.post("/api/addquestion", (req, res) => {
+//usage: /api/addpoll?pollid=${pollname}&question=${question}
+app.get("/api/addquestion", (req, res) => {
   mongo.connect(dburl, (err, database) => {
     let docs = database.db("fccvotingapp").collection("polls");
 
-    database.close();
+    docs.findOneAndUpdate(
+      { _id: new ObjectId(req.query.pollid) },
+      { $push: { pollQuestions: req.query.question } },
+      (err, result) => {
+        console.log(result);
+        res.send(
+          JSON.stringify({
+            success: true
+          })
+        );
+        database.close();
+      }
+    );
   });
 });
 

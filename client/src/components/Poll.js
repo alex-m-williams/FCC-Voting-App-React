@@ -34,8 +34,43 @@ class Poll extends Component {
       .catch(err => console.log(err));
   }
 
-  addQuestionToPoll = () => {
+  addQuestionToPoll = async () => {
     //this.props.pollID
+    const response = await fetch(
+      `/api/addpoll?pollName=${this.state.pollName}`,
+      {
+        headers: new Headers({
+          "Content-Type": "application/x-www-form-urlencoded"
+        }),
+        credentials: "include",
+        method: "post"
+      }
+    );
+
+    const body = await response.json();
+
+    if (response.status !== 200) throw Error(body.message);
+
+    return body;
+  };
+
+  addVoteToQuestion = async () => {
+    const response = await fetch(
+      `/api/addpoll?pollName=${this.state.pollName}`,
+      {
+        headers: new Headers({
+          "Content-Type": "application/x-www-form-urlencoded"
+        }),
+        credentials: "include",
+        method: "post"
+      }
+    );
+
+    const body = await response.json();
+
+    if (response.status !== 200) throw Error(body.message);
+
+    return body;
   };
 
   fetchQuestionsAndVotes = async () => {
