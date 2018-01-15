@@ -3,6 +3,8 @@ import Piechart from "./Piechart";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
+import FloatingActionButton from "material-ui/FloatingActionButton";
+import ContentAdd from "material-ui/svg-icons/content/add";
 
 import "../css/Input.css";
 
@@ -10,19 +12,12 @@ class Poll extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      pollName: "",
-      pollID: "",
       voteOptions: [],
       votes: [],
-      questionCreatorOpen: false
+      questionCreatorOpen: false,
+      question: ""
     };
   }
-
-  openQuestionCreator = () => {
-    this.setState({
-      questionCreatorOpen: !this.state.questionCreatorOpen
-    });
-  };
 
   componentWillUnmount() {
     this.props.closePoll();
@@ -34,15 +29,23 @@ class Poll extends Component {
       .catch(err => console.log(err));
   }
 
+  openQuestionCreator = () => {
+    this.setState({
+      questionCreatorOpen: !this.state.questionCreatorOpen
+    });
+  };
+
+  handleQuestionChange = event => {
+    this.setState({ question: event.target.value });
+  };
+
   addQuestionToPoll = async () => {
     //this.props.pollID
     const response = await fetch(
-      `/api/addpoll?pollName=${this.state.pollName}`,
+      `/api/addquestion?pollid=${this.props.pollID}&question=${
+        this.state.question
+      }`,
       {
-        headers: new Headers({
-          "Content-Type": "application/x-www-form-urlencoded"
-        }),
-        credentials: "include",
         method: "post"
       }
     );
@@ -54,23 +57,34 @@ class Poll extends Component {
     return body;
   };
 
-  addVoteToQuestion = async () => {
-    const response = await fetch(
-      `/api/addpoll?pollName=${this.state.pollName}`,
-      {
-        headers: new Headers({
-          "Content-Type": "application/x-www-form-urlencoded"
-        }),
-        credentials: "include",
-        method: "post"
-      }
-    );
+  onSubmit = e => {
+    e.preventDefault();
 
-    const body = await response.json();
+    this.addQuestionToPoll()
+      .then()
+      .catch(err => console.log(err));
+    this.openQuestionCreator();
+    this.fetchQuestionsAndVotes()
+      .then()
+      .catch(err => console.log(err));
+  };
 
-    if (response.status !== 200) throw Error(body.message);
+  addVoteToQuestion = async voteindex => {
+    try {
+      const response = await fetch(
+        `/api/addvote?pollid=${this.props.pollID}&voteIndex=${voteindex}`,
+        {
+          method: "post"
+        }
+      );
+      const body = await response.json();
 
-    return body;
+      if (response.status !== 200) throw Error(body.message);
+
+      return body;
+    } catch (e) {
+      this.setState({ err: e.message });
+    }
   };
 
   fetchQuestionsAndVotes = async () => {
@@ -107,7 +121,21 @@ class Poll extends Component {
 
     //list poll questions
     let pollQuestions = this.state.voteOptions.map((question, i) => {
-      return <li key={i}>{question}</li>;
+      return (
+        <li key={i}>
+          {question}{" "}
+          <FloatingActionButton
+            mini={true}
+            secondary={true}
+            onClick={() => {
+              this.addVoteToQuestion(i);
+              this.fetchQuestionsAndVotes();
+            }}
+          >
+            <ContentAdd />
+          </FloatingActionButton>
+        </li>
+      );
     });
     return (
       <React.Fragment>
@@ -158,24 +186,15 @@ class Poll extends Component {
         <div>
           {this.state.questionCreatorOpen === true ? (
             <div className="question-popout">
-              <form
-                action="/api/addpollQuestion"
-                method="POST"
-                onSubmit={this.onSubmit}
-              >
+              <form method="POST" onSubmit={this.onSubmit}>
                 <TextField
-                  value={this.state.pollName}
+                  value={this.state.question}
                   type="text"
                   name="title"
                   hintText="Poll Name"
-                  onChange={this.handlePollNameChange}
+                  onChange={this.handleQuestionChange}
                 />
-                <RaisedButton
-                  type="submit"
-                  label="Add Vote"
-                  secondary={true}
-                  onClick={this.openQuestionCreator}
-                />
+                <RaisedButton type="submit" label="Add Vote" secondary={true} />
               </form>
             </div>
           ) : (

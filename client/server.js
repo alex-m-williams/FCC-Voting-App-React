@@ -200,13 +200,13 @@ app.post("/api/addpoll", (req, res) => {
 
 //add question to poll, doesn't need to be authenticated
 //usage: /api/addpoll?pollid=${pollname}&question=${question}
-app.get("/api/addquestion", (req, res) => {
+app.post("/api/addquestion", (req, res) => {
   mongo.connect(dburl, (err, database) => {
     let docs = database.db("fccvotingapp").collection("polls");
 
     docs.findOneAndUpdate(
       { _id: new ObjectId(req.query.pollid) },
-      { $push: { pollQuestions: req.query.question } },
+      { $push: { pollQuestions: req.query.question, pollVotes: 0 } },
       (err, result) => {
         console.log(result);
         res.send(
@@ -221,12 +221,28 @@ app.get("/api/addquestion", (req, res) => {
 });
 
 //vote on a question, doesn't need to be authenticated
-//usage: /api/addvote?pollName=${pollname}&question=${question}
+//usage: /api/addvote?pollid=${pollname}&voteIndex=${vi}
 app.post("/api/addvote", (req, res) => {
   mongo.connect(dburl, (err, database) => {
     let docs = database.db("fccvotingapp").collection("polls");
 
-    database.close();
+    //use a left side variable in mongodb $inc below
+    var variable = `pollVotes.${req.query.voteIndex}`;
+    var action = {};
+    action[variable] = 1;
+
+    docs.findOneAndUpdate(
+      { _id: new ObjectId(req.query.pollid) },
+      { $inc: action },
+      (err, result) => {
+        res.send(
+          JSON.stringify({
+            success: true
+          })
+        );
+        database.close();
+      }
+    );
   });
 });
 
