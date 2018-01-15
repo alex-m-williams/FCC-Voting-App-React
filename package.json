@@ -5,7 +5,7 @@
     "client": "cd client && yarn start",
     "server": "cd server && node server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
-    "start:prod": "cd client && yarn start:prod",
+    "start:prod": "cd server && yarn start:prod",
     "heroku-postbuild": "yarn"
   },
   "dependencies": {
