@@ -1,8 +1,16 @@
-const express = require("express");
+"use strict";
 
-const app = express();
-const port = process.env.PORT || 5000;
-const cors = require("cors");
+var _stringify = require("babel-runtime/core-js/json/stringify");
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var express = require("express");
+
+var app = express();
+var port = process.env.PORT || 5000;
+var cors = require("cors");
 app.use(cors());
 
 //https://github.com/passport/express-4.x-twitter-example/blob/master/server.js
@@ -10,10 +18,10 @@ var passport = require("passport");
 var Strategy = require("passport-twitter").Strategy;
 
 //MONGO setup
-const dbUser = process.env.DBUSER;
-const dbPW = process.env.DBPW;
-const dburl = `mongodb://${dbUser}:${dbPW}@ds237967.mlab.com:37967/fccvotingapp`;
-const mongo = require("mongodb").MongoClient;
+var dbUser = process.env.DBUSER;
+var dbPW = process.env.DBPW;
+var dburl = "mongodb://" + dbUser + ":" + dbPW + "@ds237967.mlab.com:37967/fccvotingapp";
+var mongo = require("mongodb").MongoClient;
 var ObjectId = require("mongodb").ObjectId;
 
 // Configure the Twitter strategy for use by Passport.
@@ -71,7 +79,7 @@ app.set("trust proxy", 1);
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get("/api/hello", (req, res) => {
+app.get("/api/hello", function (req, res) {
   res.send({ express: "Hello From Express" });
 });
 
@@ -83,22 +91,22 @@ app.get("/api/login/twitter/return", passport.authenticate("twitter", { failureR
 
 //logout
 app.get("/logout", function (req, res) {
-  req.session.destroy(() => {
+  req.session.destroy(function () {
     req.logOut();
 
     res.redirect("/");
   });
 });
 
-app.get("/api/profile", (req, res) => {
+app.get("/api/profile", function (req, res) {
   res.setHeader("Content-Type", "application/json");
   if (!req.isAuthenticated()) {
-    res.send(JSON.stringify({
+    res.send((0, _stringify2.default)({
       success: false,
       message: "You need to be authenticated to access this page!"
     }));
   } else {
-    res.send(JSON.stringify({
+    res.send((0, _stringify2.default)({
       success: true,
       user: req.user
     }));
@@ -106,18 +114,18 @@ app.get("/api/profile", (req, res) => {
   res.end();
 });
 
-app.get("/users/alexwilliams567/listpolls", (req, res) => {
+app.get("/users/alexwilliams567/listpolls", function (req, res) {
   res.setHeader("Content-Type", "application/json");
 
-  mongo.connect(dburl, (err, database) => {
-    let docs = database.db("fccvotingapp").collection("polls");
-    let pollNames = [];
-    docs.find({ user: "alexwilliams567" }).toArray((err, result) => {
+  mongo.connect(dburl, function (err, database) {
+    var docs = database.db("fccvotingapp").collection("polls");
+    var pollNames = [];
+    docs.find({ user: "alexwilliams567" }).toArray(function (err, result) {
       if (err) throw err;
-      for (let i = 0; i < result.length; i++) {
+      for (var i = 0; i < result.length; i++) {
         pollNames.push({ pollName: result[i].pollName, id: result[i]._id });
       }
-      res.send(JSON.stringify({
+      res.send((0, _stringify2.default)({
         polls: pollNames
       }));
       res.end();
@@ -128,18 +136,18 @@ app.get("/users/alexwilliams567/listpolls", (req, res) => {
 });
 
 //query list of polls in db
-app.get("/api/listpolls", (req, res) => {
+app.get("/api/listpolls", function (req, res) {
   res.setHeader("Content-Type", "application/json");
 
-  mongo.connect(dburl, (err, database) => {
-    let docs = database.db("fccvotingapp").collection("polls");
-    let pollNames = [];
-    docs.find({}).toArray((err, result) => {
+  mongo.connect(dburl, function (err, database) {
+    var docs = database.db("fccvotingapp").collection("polls");
+    var pollNames = [];
+    docs.find({}).toArray(function (err, result) {
       if (err) throw err;
-      for (let i = 0; i < result.length; i++) {
+      for (var i = 0; i < result.length; i++) {
         pollNames.push({ pollName: result[i].pollName, id: result[i]._id });
       }
-      res.send(JSON.stringify({
+      res.send((0, _stringify2.default)({
         polls: pollNames
       }));
       res.end();
@@ -151,14 +159,14 @@ app.get("/api/listpolls", (req, res) => {
 
 //return questions and votes by id, unauthenticated
 //usage: /api/listquestions?questionid=${id}
-app.get("/api/listquestions", (req, res) => {
+app.get("/api/listquestions", function (req, res) {
   res.setHeader("Content-Type", "application/json");
 
-  mongo.connect(dburl, (err, database) => {
-    let docs = database.db("fccvotingapp").collection("polls");
+  mongo.connect(dburl, function (err, database) {
+    var docs = database.db("fccvotingapp").collection("polls");
     docs.findOne({ _id: new ObjectId(req.query.questionid) }, function (err, doc) {
       if (err) throw err;
-      res.send(JSON.stringify({
+      res.send((0, _stringify2.default)({
         pollQuestions: doc.pollQuestions,
         pollVotes: doc.pollVotes
       }));
@@ -171,20 +179,20 @@ app.get("/api/listquestions", (req, res) => {
 
 //add poll to db, must be authenticated
 //usage: /api/addpoll?pollName=${pollname}
-app.post("/api/addpoll", (req, res) => {
+app.post("/api/addpoll", function (req, res) {
   if (!req.isAuthenticated()) {
-    res.send(JSON.stringify({
+    res.send((0, _stringify2.default)({
       success: false,
       message: "You need to be authenticated to add a poll!"
     }));
   } else {
     obj = { pollName: req.query.pollName, pollQuestions: [], pollVotes: [] };
-    mongo.connect(dburl, (err, database) => {
-      let docs = database.db("fccvotingapp").collection("polls");
-      docs.insert(obj, (err, data) => {
+    mongo.connect(dburl, function (err, database) {
+      var docs = database.db("fccvotingapp").collection("polls");
+      docs.insert(obj, function (err, data) {
         if (err) throw err;
       });
-      res.send(JSON.stringify({
+      res.send((0, _stringify2.default)({
         success: true,
         docAdded: obj
       }));
@@ -195,12 +203,12 @@ app.post("/api/addpoll", (req, res) => {
 
 //add question to poll, doesn't need to be authenticated
 //usage: /api/addpoll?pollid=${pollname}&question=${question}
-app.post("/api/addquestion", (req, res) => {
-  mongo.connect(dburl, (err, database) => {
-    let docs = database.db("fccvotingapp").collection("polls");
+app.post("/api/addquestion", function (req, res) {
+  mongo.connect(dburl, function (err, database) {
+    var docs = database.db("fccvotingapp").collection("polls");
 
-    docs.findOneAndUpdate({ _id: new ObjectId(req.query.pollid) }, { $push: { pollQuestions: req.query.question, pollVotes: 0 } }, (err, result) => {
-      res.send(JSON.stringify({
+    docs.findOneAndUpdate({ _id: new ObjectId(req.query.pollid) }, { $push: { pollQuestions: req.query.question, pollVotes: 0 } }, function (err, result) {
+      res.send((0, _stringify2.default)({
         success: true
       }));
       database.close();
@@ -210,17 +218,17 @@ app.post("/api/addquestion", (req, res) => {
 
 //vote on a question, doesn't need to be authenticated
 //usage: /api/addvote?pollid=${pollname}&voteIndex=${vi}
-app.post("/api/addvote", (req, res) => {
-  mongo.connect(dburl, (err, database) => {
-    let docs = database.db("fccvotingapp").collection("polls");
+app.post("/api/addvote", function (req, res) {
+  mongo.connect(dburl, function (err, database) {
+    var docs = database.db("fccvotingapp").collection("polls");
 
     //use a left side variable in mongodb $inc below
-    var variable = `pollVotes.${req.query.voteIndex}`;
+    var variable = "pollVotes." + req.query.voteIndex;
     var action = {};
     action[variable] = 1;
 
-    docs.findOneAndUpdate({ _id: new ObjectId(req.query.pollid) }, { $inc: action }, (err, result) => {
-      res.send(JSON.stringify({
+    docs.findOneAndUpdate({ _id: new ObjectId(req.query.pollid) }, { $inc: action }, function (err, result) {
+      res.send((0, _stringify2.default)({
         success: true
       }));
       database.close();
@@ -228,4 +236,6 @@ app.post("/api/addvote", (req, res) => {
   });
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(port, function () {
+  return console.log("Listening on port " + port);
+});
