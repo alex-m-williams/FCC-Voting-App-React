@@ -702,6 +702,10 @@ has-to-string-tag-x@^1.4.1:
   dependencies:
     has-symbol-support-x "^1.4.1"
 
+highcharts@^6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/highcharts/-/highcharts-6.0.4.tgz#bb6956de2fbe24fa4b6141be7ceadc052ca2abf9"
+
 hoist-non-react-statics@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.3.1.tgz#343db84c6018c650778898240135a1420ee22ce0"
@@ -1271,6 +1275,12 @@ react-event-listener@^0.5.1:
     fbjs "^0.8.16"
     prop-types "^15.6.0"
     warning "^3.0.0"
+
+react-highcharts@^16.0.1:
+  version "16.0.1"
+  resolved "https://registry.yarnpkg.com/react-highcharts/-/react-highcharts-16.0.1.tgz#38d015d8ba5f562a7589679bc48441d6b1ad1c49"
+  dependencies:
+    highcharts "^6.0.4"
 
 react-transition-group@^1.2.1:
   version "1.2.1"

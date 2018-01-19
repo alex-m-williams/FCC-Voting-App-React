@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import Piechart from "./Piechart";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import RaisedButton from "material-ui/RaisedButton";
 import TextField from "material-ui/TextField";
 import FloatingActionButton from "material-ui/FloatingActionButton";
 import ContentAdd from "material-ui/svg-icons/content/add";
+
+import ReactHighcharts from "react-highcharts";
 
 import "../css/Input.css";
 
@@ -119,6 +120,61 @@ class Poll extends Component {
       opacity: opac
     };
 
+    let config = {
+      chart: {
+        type: "bar"
+      },
+      title: {
+        text: "Questions and Current Votes"
+      },
+      xAxis: {
+        categories: this.state.voteOptions,
+        title: {
+          text: null
+        }
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: "Votes",
+          align: "high"
+        },
+        labels: {
+          overflow: "justify"
+        }
+      },
+      tooltip: {
+        valueSuffix: " votes"
+      },
+      plotOptions: {
+        bar: {
+          dataLabels: {
+            enabled: true
+          }
+        }
+      },
+      legend: {
+        layout: "vertical",
+        align: "right",
+        verticalAlign: "top",
+        x: -40,
+        y: 80,
+        floating: true,
+        borderWidth: 1,
+        backgroundColor: "#FFFFFF",
+        shadow: true
+      },
+      credits: {
+        enabled: false
+      },
+      series: [
+        {
+          name: "Votes",
+          data: this.state.votes
+        }
+      ]
+    };
+
     //list poll questions
     let pollQuestions = this.state.voteOptions.map((question, i) => {
       return (
@@ -159,18 +215,7 @@ class Poll extends Component {
             <React.Fragment>
               <ul style={{ display: "inline-block" }}>{pollQuestions}</ul>
               <div style={{ display: "inline-block" }}>
-                <svg
-                  style={{ height: "200px" }}
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <Piechart
-                    x={100}
-                    y={100}
-                    outerRadius={100}
-                    innerRadius={50}
-                    data={data}
-                  />
-                </svg>
+                <ReactHighcharts config={config} />
               </div>
             </React.Fragment>
           ) : (
