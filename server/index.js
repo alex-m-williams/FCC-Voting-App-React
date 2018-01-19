@@ -38,7 +38,8 @@ app.use(
     secret: "keyboard cat",
     resave: false,
     proxy: true,
-    saveUninitialized: false
+    saveUninitialized: false,
+    unset: "destroy"
   })
 );
 app.enable("trust proxy");
@@ -123,14 +124,13 @@ app.get(
 );
 
 //logout
-app.get("/logout", function(req, res) {
-  req.session.destroy(() => {
-    req.logOut();
-
-    res.redirect("/");
-  });
+app.get("/api/logout", function(req, res) {
+  req.logout();
+  req.session = null;
+  res.redirect("/");
 });
 
+//simple login confirmation
 app.get("/api/profile", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   if (!req.isAuthenticated()) {
@@ -151,6 +151,7 @@ app.get("/api/profile", (req, res) => {
   res.end();
 });
 
+//use authenticated user id to find all docs(polls) that match
 app.get("/api/user/listpolls", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   if (!req.isAuthenticated()) {

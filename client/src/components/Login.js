@@ -17,7 +17,7 @@ class Login extends Component {
   };
 
   logOut = () => {
-    window.location = "/logout";
+    window.location = "/api/logout";
   };
 
   render() {
