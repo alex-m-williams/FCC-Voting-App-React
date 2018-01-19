@@ -41,7 +41,7 @@ app.use(
     saveUninitialized: false
   })
 );
-app.set("trust proxy", 1);
+app.enable("trust proxy");
 
 // Initialize Passport and restore authentication state, if any, from the
 // session.
@@ -151,7 +151,7 @@ app.get("/api/profile", (req, res) => {
   res.end();
 });
 
-app.get("/users/alexwilliams567/listpolls", (req, res) => {
+app.get("/api/users/alexwilliams567/listpolls", (req, res) => {
   res.setHeader("Content-Type", "application/json");
 
   mongo.connect(dburl, (err, database) => {

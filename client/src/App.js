@@ -107,8 +107,8 @@ class App extends Component {
                 </Link>
               </MenuItem>
               <MenuItem>
-                <Link to="/about" onClick={this.handleClose}>
-                  About
+                <Link to="/myPolls" onClick={this.handleClose}>
+                  myPolls
                 </Link>
               </MenuItem>
               <MenuItem>
@@ -118,10 +118,25 @@ class App extends Component {
               </MenuItem>
             </Drawer>
             <Route exact path="/" component={Home} />
-            <Route path="/about" component={About} />
+            <Route
+              path="/myPolls"
+              render={props => (
+                <Polls
+                  filterByUser={true}
+                  authed={this.state.authed}
+                  {...props}
+                />
+              )}
+            />
             <Route
               path="/polls"
-              render={props => <Polls authed={this.state.authed} {...props} />}
+              render={props => (
+                <Polls
+                  filterByUser={false}
+                  authed={this.state.authed}
+                  {...props}
+                />
+              )}
             />
           </React.Fragment>
         </MuiThemeProvider>

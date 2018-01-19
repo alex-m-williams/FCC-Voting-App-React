@@ -24,9 +24,15 @@ class Polls extends Component {
   }
 
   componentDidMount() {
-    this.fetchPolls()
-      .then()
-      .catch(err => console.log(err));
+    if (this.props.filterByUser) {
+      this.fetchPollsByUser()
+        .then()
+        .catch(err => console.log(err));
+    } else {
+      this.fetchPolls()
+        .then()
+        .catch(err => console.log(err));
+    }
   }
 
   openPoll = id => {
@@ -59,9 +65,15 @@ class Polls extends Component {
       .then()
       .catch(err => console.log(err));
     this.openPollCreator();
-    this.fetchPolls()
-      .then()
-      .catch(err => console.log(err));
+    if (this.props.filterByUser) {
+      this.fetchPollsByUser()
+        .then()
+        .catch(err => console.log(err));
+    } else {
+      this.fetchPolls()
+        .then()
+        .catch(err => console.log(err));
+    }
   };
 
   addPoll = async () => {
@@ -85,6 +97,27 @@ class Polls extends Component {
 
   fetchPolls = async () => {
     const response = await fetch("/api/listpolls", {
+      headers: new Headers({
+        "Content-Type": "application/json"
+      })
+    });
+
+    const body = await response.json();
+
+    if (response.status !== 200) throw Error(body.message);
+    let pollIDs = [];
+    body.polls.forEach(poll => {
+      pollIDs.push(poll);
+    });
+
+    this.setState({
+      pollIdentifiers: pollIDs
+    });
+    return body;
+  };
+
+  fetchPollsByUser = async () => {
+    const response = await fetch("/api/users/alexwilliams567/listpolls", {
       headers: new Headers({
         "Content-Type": "application/json"
       })
