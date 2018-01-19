@@ -33,6 +33,7 @@ class Login extends Component {
     const closedStyle = {};
 
     let userInfo = this.props.profileResponse;
+    console.log(userInfo);
     let displayName = userInfo.displayName;
     let profilePicture = userInfo.photos[0].value;
     return (

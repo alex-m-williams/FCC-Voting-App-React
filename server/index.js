@@ -6,8 +6,8 @@ const cors = require("cors");
 app.use(cors());
 
 //https://github.com/passport/express-4.x-twitter-example/blob/master/server.js
-var passport = require("passport");
-var Strategy = require("passport-twitter").Strategy;
+const passport = require("passport");
+const TwitterStrategy = require("passport-twitter").Strategy;
 
 const path = require("path");
 
@@ -16,55 +16,23 @@ const dbUser = process.env.DBUSER;
 const dbPW = process.env.DBPW;
 const dburl = `mongodb://${dbUser}:${dbPW}@ds237967.mlab.com:37967/fccvotingapp`;
 const mongo = require("mongodb").MongoClient;
-var ObjectId = require("mongodb").ObjectId;
+const mongoose = require("mongoose");
 
-// Configure the Twitter strategy for use by Passport.
-//
-// OAuth 1.0-based strategies require a `verify` function which receives the
-// credentials (`token` and `tokenSecret`) for accessing the Twitter API on the
-// user's behalf, along with the user's profile.  The function must invoke `cb`
-// with a user object, which will be set at `req.user` in route handlers after
-// authentication.
-passport.use(
-  new Strategy(
-    {
-      consumerKey: process.env.CONSUMER_KEY,
-      consumerSecret: process.env.CONSUMER_SECRET,
-      callbackURL: process.env.CALLBACK
-    },
-    function(token, tokenSecret, profile, cb) {
-      // In this example, the user's Twitter profile is supplied as the user
-      // record.  In a production-quality application, the Twitter profile should
-      // be associated with a user record in the application's database, which
-      // allows for account linking and authentication with other identity
-      // providers.
-      return cb(null, profile);
-    }
-  )
+mongoose.connect(
+  `mongodb://${dbUser}:${dbPW}@ds237967.mlab.com:37967/fccvotingapp`
 );
 
-// Configure Passport authenticated session persistence.
-//
-// In order to restore authentication state across HTTP requests, Passport needs
-// to serialize users into and deserialize users out of the session.  In a
-// production-quality application, this would typically be as simple as
-// supplying the user ID when serializing, and querying the user record by ID
-// from the database when deserializing.  However, due to the fact that this
-// example does not have a database, the complete Twitter profile is serialized
-// and deserialized.
-passport.serializeUser(function(user, cb) {
-  cb(null, user);
+var User = require("./user");
+
+const ObjectId = require("mongodb").ObjectId;
+
+let db;
+mongo.connect(dburl, (err, database) => {
+  db = database.db("fccvotingapp");
 });
 
-passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
-});
+console.log(process.env.CALLBACK);
 
-// Use application-level middleware for common functionality, including
-// logging, parsing, and session handling.
-app.use(require("morgan")("combined"));
-app.use(require("cookie-parser")());
-app.use(require("body-parser").urlencoded({ extended: true }));
 app.use(
   require("express-session")({
     secret: "keyboard cat",
@@ -79,6 +47,63 @@ app.set("trust proxy", 1);
 // session.
 app.use(passport.initialize());
 app.use(passport.session());
+// Use application-level middleware for common functionality, including
+// logging, parsing, and session handling.
+app.use(require("morgan")("combined"));
+app.use(require("cookie-parser")());
+app.use(require("body-parser").urlencoded({ extended: true }));
+
+// Configure the Twitter strategy for use by Passport.
+//
+// OAuth 1.0-based strategies require a `verify` function which receives the
+// credentials (`token` and `tokenSecret`) for accessing the Twitter API on the
+// user's behalf, along with the user's profile.  The function must invoke `cb`
+// with a user object, which will be set at `req.user` in route handlers after
+// authentication.
+passport.use(
+  new TwitterStrategy(
+    {
+      consumerKey: process.env.CONSUMER_KEY,
+      consumerSecret: process.env.CONSUMER_SECRET,
+      callbackURL: process.env.CALLBACK
+    },
+    function(accessToken, refreshToken, profile, done) {
+      var searchQuery = {
+        name: profile.displayName
+      };
+
+      var updates = {
+        name: profile.displayName,
+        someID: profile.id,
+        wholeprof: profile
+      };
+
+      var options = {
+        upsert: true
+      };
+
+      // update the user if s/he exists or add a new user
+      User.findOneAndUpdate(searchQuery, updates, options, function(err, user) {
+        if (err) {
+          return done(err);
+        } else {
+          return done(null, user);
+        }
+      });
+    }
+  )
+);
+
+// Configure Passport authenticated session persistence.
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
 
 // Priority serve any static files.
 app.use(express.static(path.resolve(__dirname, "../client/build")));
