@@ -151,27 +151,38 @@ app.get("/api/profile", (req, res) => {
   res.end();
 });
 
-app.get("/api/users/alexwilliams567/listpolls", (req, res) => {
+app.get("/api/user/listpolls", (req, res) => {
   res.setHeader("Content-Type", "application/json");
+  if (!req.isAuthenticated()) {
+    res.send(
+      JSON.stringify({
+        success: false,
+        message: "You need to be authenticated to view your polls created"
+      })
+    );
+  } else {
+    let userID = req.user.someID;
 
-  mongo.connect(dburl, (err, database) => {
-    let docs = database.db("fccvotingapp").collection("polls");
-    let pollNames = [];
-    docs.find({ user: "alexwilliams567" }).toArray((err, result) => {
-      if (err) throw err;
-      for (let i = 0; i < result.length; i++) {
-        pollNames.push({ pollName: result[i].pollName, id: result[i]._id });
-      }
-      res.send(
-        JSON.stringify({
-          polls: pollNames
-        })
-      );
-      res.end();
+    mongo.connect(dburl, (err, database) => {
+      let docs = database.db("fccvotingapp").collection("polls");
+      let pollNames = [];
+      docs.find({ userID: userID }).toArray((err, result) => {
+        if (err) throw err;
+        for (let i = 0; i < result.length; i++) {
+          pollNames.push({ pollName: result[i].pollName, id: result[i]._id });
+        }
+        res.send(
+          JSON.stringify({
+            success: true,
+            polls: pollNames
+          })
+        );
+        res.end();
+      });
+
+      database.close();
     });
-
-    database.close();
-  });
+  }
 });
 
 //query list of polls in db
@@ -188,6 +199,7 @@ app.get("/api/listpolls", (req, res) => {
       }
       res.send(
         JSON.stringify({
+          success: true,
           polls: pollNames
         })
       );
@@ -234,16 +246,21 @@ app.post("/api/addpoll", (req, res) => {
       })
     );
   } else {
-    obj = { pollName: req.query.pollName, pollQuestions: [], pollVotes: [] };
+    docToAdd = {
+      pollName: req.query.pollName,
+      pollQuestions: [],
+      pollVotes: [],
+      userID: req.user.userID
+    };
     mongo.connect(dburl, (err, database) => {
       let docs = database.db("fccvotingapp").collection("polls");
-      docs.insert(obj, (err, data) => {
+      docs.insert(docToAdd, (err, data) => {
         if (err) throw err;
       });
       res.send(
         JSON.stringify({
           success: true,
-          docAdded: obj
+          docAdded: docToAdd
         })
       );
       database.close();

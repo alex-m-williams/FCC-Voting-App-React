@@ -117,23 +117,25 @@ class Polls extends Component {
   };
 
   fetchPollsByUser = async () => {
-    const response = await fetch("/api/users/alexwilliams567/listpolls", {
+    const response = await fetch("/api/user/listpolls", {
+      credentials: "include",
       headers: new Headers({
         "Content-Type": "application/json"
       })
     });
-
     const body = await response.json();
 
     if (response.status !== 200) throw Error(body.message);
-    let pollIDs = [];
-    body.polls.forEach(poll => {
-      pollIDs.push(poll);
-    });
+    if (body.success) {
+      let pollIDs = [];
+      body.polls.forEach(poll => {
+        pollIDs.push(poll);
+      });
 
-    this.setState({
-      pollIdentifiers: pollIDs
-    });
+      this.setState({
+        pollIdentifiers: pollIDs
+      });
+    }
     return body;
   };
 

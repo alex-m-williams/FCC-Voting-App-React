@@ -52,7 +52,6 @@ class App extends Component {
 
     if (response.status !== 200) throw Error(body.message);
     if (body.success === true) {
-      console.log(body);
       this.setState({
         authed: true,
         profileResponse: body.user.wholeprof
