@@ -105,11 +105,13 @@ class App extends Component {
                   Home
                 </Link>
               </MenuItem>
-              <MenuItem>
-                <Link to="/myPolls" onClick={this.handleClose}>
-                  myPolls
-                </Link>
-              </MenuItem>
+              {this.state.authed && (
+                <MenuItem>
+                  <Link to="/myPolls" onClick={this.handleClose}>
+                    myPolls
+                  </Link>
+                </MenuItem>
+              )}
               <MenuItem>
                 <Link to="/polls" onClick={this.handleClose}>
                   Polls
@@ -117,16 +119,18 @@ class App extends Component {
               </MenuItem>
             </Drawer>
             <Route exact path="/" component={Home} />
-            <Route
-              path="/myPolls"
-              render={props => (
-                <Polls
-                  filterByUser={true}
-                  authed={this.state.authed}
-                  {...props}
-                />
-              )}
-            />
+            {this.state.authed && (
+              <Route
+                path="/myPolls"
+                render={props => (
+                  <Polls
+                    filterByUser={true}
+                    authed={this.state.authed}
+                    {...props}
+                  />
+                )}
+              />
+            )}
             <Route
               path="/polls"
               render={props => (

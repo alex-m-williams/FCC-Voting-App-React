@@ -251,7 +251,7 @@ app.post("/api/addpoll", (req, res) => {
       pollName: req.query.pollName,
       pollQuestions: [],
       pollVotes: [],
-      userID: req.user.userID
+      userID: req.user.someID
     };
     mongo.connect(dburl, (err, database) => {
       let docs = database.db("fccvotingapp").collection("polls");
