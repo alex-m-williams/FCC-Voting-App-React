@@ -6,6 +6,7 @@ import FloatingActionButton from "material-ui/FloatingActionButton";
 import ContentAdd from "material-ui/svg-icons/content/add";
 
 import ReactHighcharts from "react-highcharts";
+import ShareButton from "react-social-share-buttons";
 
 import "../css/Input.css";
 
@@ -246,6 +247,17 @@ class Poll extends Component {
             <div />
           )}
         </div>
+        {this.props.filterByUser && (
+          <RaisedButton type="button">
+            <ShareButton
+              compact
+              socialMedia={"facebook"}
+              url={"https://xkcd.com/1024/"}
+              media={"https://imgs.xkcd.com/comics/error_code.png"}
+              text="Sit by a lake"
+            />
+          </RaisedButton>
+        )}
       </React.Fragment>
     );
   }

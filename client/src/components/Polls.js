@@ -198,6 +198,7 @@ class Polls extends Component {
                   path={`${this.props.match.url}/:PollId`}
                   render={props => (
                     <Poll
+                      filterByUser={this.props.filterByUser}
                       closePoll={this.closePoll}
                       pollID={this.state.openPollID}
                       {...props}
