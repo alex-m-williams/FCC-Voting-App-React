@@ -48,6 +48,22 @@ class Polls extends Component {
     });
   };
 
+  closePollByDeletion = () => {
+    if (this.props.filterByUser) {
+      this.fetchPollsByUser()
+        .then()
+        .catch(err => console.log(err));
+    } else {
+      this.fetchPolls()
+        .then()
+        .catch(err => console.log(err));
+    }
+
+    this.setState({
+      pollOpen: false
+    });
+  };
+
   openPollCreator = () => {
     this.setState({
       pollCreatorOpen: !this.state.pollCreatorOpen
@@ -200,6 +216,7 @@ class Polls extends Component {
                     <Poll
                       filterByUser={this.props.filterByUser}
                       closePoll={this.closePoll}
+                      closePollByDeletion={this.closePollByDeletion}
                       pollID={this.state.openPollID}
                       {...props}
                     />

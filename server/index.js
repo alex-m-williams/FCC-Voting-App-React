@@ -269,6 +269,31 @@ app.post("/api/addpoll", (req, res) => {
   }
 });
 
+//deletepoll
+//add poll to db, must be authenticated
+//usage: /api/deletepoll?pollid=${pollid}
+///api/deletepoll?pollid=${this.props.pollID}
+app.post("/api/deletepoll", (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.send(
+      JSON.stringify({
+        success: false,
+        message: "You need to be authenticated to add a poll!"
+      })
+    );
+  } else {
+    //db.test_users.remove( {"_id": ObjectId("4d512b45cc9374271b02ec4f")});
+    //req.query.pollid
+    mongo.connect(dburl, (err, database) => {
+      let docs = database.db("fccvotingapp").collection("polls");
+      console.log("hit delete");
+      docs.remove({ _id: ObjectId(req.query.pollid) });
+
+      database.close();
+    });
+  }
+});
+
 //add question to poll, doesn't need to be authenticated
 //usage: /api/addpoll?pollid=${pollname}&question=${question}
 app.post("/api/addquestion", (req, res) => {

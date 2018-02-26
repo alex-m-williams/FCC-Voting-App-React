@@ -89,6 +89,26 @@ class Poll extends Component {
     }
   };
 
+  deletePoll = async () => {
+    try {
+      const response = await fetch(
+        `/api/deletepoll?pollid=${this.props.pollID}`,
+        {
+          credentials: "include",
+          method: "post"
+        }
+      );
+
+      const body = await response.json();
+
+      if (response.status !== 200) throw Error(body.message);
+
+      return body;
+    } catch (e) {
+      this.setState({ err: e.message });
+    }
+  };
+
   fetchQuestionsAndVotes = async () => {
     const response = await fetch(
       `/api/listquestions?questionid=${this.props.pollID}`,
@@ -199,15 +219,27 @@ class Poll extends Component {
         <div style={pollStyle}>
           <Route
             render={({ history }) => (
-              <RaisedButton
-                label="Go Back"
-                secondary={true}
-                type="button"
-                onClick={() => {
-                  history.push("/polls");
-                  this.props.closePoll();
-                }}
-              />
+              <React.Fragment>
+                <RaisedButton
+                  label="Go Back"
+                  secondary={true}
+                  type="button"
+                  onClick={() => {
+                    this.props.closePoll();
+                  }}
+                />
+                {this.props.filterByUser && (
+                  <RaisedButton
+                    label="Delete This Poll"
+                    secondary={true}
+                    style={{ marginLeft: "50%" }}
+                    type="button"
+                    onClick={() => {
+                      this.deletePoll().then(this.props.closePollByDeletion());
+                    }}
+                  />
+                )}
+              </React.Fragment>
             )}
           />
           <h3>{this.props.match.params.PollId}</h3>
@@ -248,15 +280,24 @@ class Poll extends Component {
           )}
         </div>
         {this.props.filterByUser && (
-          <RaisedButton type="button">
-            <ShareButton
-              compact
-              socialMedia={"facebook"}
-              url={"https://xkcd.com/1024/"}
-              media={"https://imgs.xkcd.com/comics/error_code.png"}
-              text="Sit by a lake"
-            />
-          </RaisedButton>
+          <React.Fragment>
+            <RaisedButton type="button">
+              <ShareButton
+                compact
+                socialMedia={"facebook"}
+                url={window.location.href}
+                text="Check out this poll"
+              />
+            </RaisedButton>
+            <RaisedButton type="button">
+              <ShareButton
+                compact
+                socialMedia={"twitter"}
+                url={window.location.href}
+                text="Peep my poll"
+              />
+            </RaisedButton>
+          </React.Fragment>
         )}
       </React.Fragment>
     );
